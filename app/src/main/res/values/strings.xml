@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HomeworkHoundV2</string>
+    <string-array name="Colors">
+        <item>red</item>
+        <item>blue</item>
+        <item>green</item>
+        <item>orange</item>
+        <item>pink</item>
+        <item>purple</item>
+    </string-array>
+</resources>
