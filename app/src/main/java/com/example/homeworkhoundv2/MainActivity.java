@@ -200,15 +200,6 @@ public class MainActivity extends AppCompatActivity {
         else {
             Log.d("Debug Log", "Error loading additional assignments in Main Activity");
         }
-
-        // After loading more assignments, you can update the assignmentList and notify the adapter:
-        //assignmentAdapter.notifyDataSetChanged();
-
-        // Increment the latestIntervalLoaded
-        //AppConfig.latestIntervalLoaded++;
-
-        // Set loadingMore to false after loading is complete
-        //loadingMore = false; This is now being done in the assignmentDataReadListener
     }
 
     private Date convertStringToDateFormat(String stringToDate) {
