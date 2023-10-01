@@ -1,50 +1,33 @@
 package com.example.homeworkhoundv2;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.google.api.services.sheets.v4.Sheets;
 
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.C;
-
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Sheets sheetsService = null;
-    private int rowStart = AppConfig.intervalStart;          // The row the assignments start on in the interval
-    private int rowEnd = rowStart + AppConfig.LOAD_INTERVAL; // The row the assignments end on int the given interval
+    //TODO: Will Probs remove the rowStart and rowEnd as global variables and make them local in the onCreate or something
+    private int rowStart = AppConfig.INTERVAL_START;              // The row the assignments start on in the interval
+    private int rowEnd = rowStart + AppConfig.LOAD_INTERVAL - 1; // The row the assignments end on int the given interval (-1 because rowStart is inclusive)
     private int nextRowStart;                      // The next starting row of assignments to load
     private int nextRowEnd;                        // The next ending row of assignments to load
+    private boolean loadingMore = false;                         // Is the program currently loading more assignments
     private List<Assignment> assignmentList;
     private AssignmentAdapter assignmentAdapter;
     private List<Course> courseList;
@@ -79,16 +62,19 @@ public class MainActivity extends AppCompatActivity {
     *       instead of reading back the change I will simply update the local assignment list to visualize the
     *       change without actually getting the changed data.
     *
-    * 3) Loading more assignments:
+    * 3.1) Loading more assignments:
     *       When I want to load more resources get the current number of assignments loaded and % it by
     *       the LOAD_INTERVAL if the remainder is 0 then all intervals are full so load the next interval.
+    * 3.2) Removing discordantly loaded assignments:
+    *       Implement some code to remove intervals of assignments from the currently loaded assignment list.
+    *       For example if the current interval is 5 then unload the all intervals except intervals 4,5,6.
     * */
 
-    /** IMPORTANT - Just finished adding the delete feature to the assignments next up I need
-     * to figure out how I want to do my sorting by date and color **/
-
+    //TODO: Make these modifications if possible
     /** Can prob remove the AppConfig.totalAssignmentsCount++ from every where and simply put it in the
      * Google Sheet writer class and the -- in the deleter **/
+
+    /** When I return work on adding the load more button, then the above green text, then UI beautification **/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,9 +102,6 @@ public class MainActivity extends AppCompatActivity {
         // Get the current courseList (If list is empty it is initialized as a new ArrayList<>())
         courseList = courseListSingleton.getCourseList();
 
-        // Initialize the course list
-        //courseList = new ArrayList<>();  // If using course list singleton this is not necessary
-
         // Initialize the Assignment adapter and recycler view
         assignmentList = new ArrayList<>();
         assignmentAdapter = new AssignmentAdapter(this, assignmentList, sheetsService);
@@ -127,9 +110,10 @@ public class MainActivity extends AppCompatActivity {
         // Set the initial range to load
         String initialRange = "A" + rowStart + ":C" + rowEnd;
 
+        /** The bellow code is probably not needed **/
         // Increment the range for the next load interval (this is more of a formality in this method but doing it to set a precedence)
-        nextRowStart += AppConfig.LOAD_INTERVAL + 1;  // Example: 14 += 20 + 1 | equals 35 because 34 is the end of previous interval
-        nextRowEnd += rowStart + AppConfig.LOAD_INTERVAL;
+        //nextRowStart = AppConfig.LOAD_INTERVAL + 1;  // Example: 14 += 20 + 1 | equals 35 because 34 is the end of previous interval
+        //nextRowEnd += rowStart + AppConfig.LOAD_INTERVAL;
 
         // Initialize the course list and assignment list using data from the Google Sheet
         if (sheetsService != null) {
@@ -166,16 +150,66 @@ public class MainActivity extends AppCompatActivity {
                 dialogManager.AssignmentModificationDialog(null, AppConfig.totalAssignmentsCount);
             }
         });
+
+        /** IDEA - I can probs find the last visiable item position and if it is less than the start interval
+         * of the next highest interval after the current interval then I can remove 20 assignments from
+         * the end of the assignment list **/
+        // Set a scroll listener to detect when the user reaches the end of the RecyclerView
+        assignmentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                // Check if it's not already loading more and the user is at the end of the list
+                if (AppConfig.intervalAtCapacity && !loadingMore && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount) {
+                    loadingMore = true;
+
+                    // Load more assignments here
+                    loadMoreAssignments();
+                    //Log.d("Debug Log", "Inside loading more area ************************" + totalItemCount);
+                }
+            }
+        });
     }
 
-    /** IMPORTANT - Add an onActivityResult method to catch when the AddEditCourseActivity ends  *
-     *  This will be used to update the local course list                                       **/
+    private void loadMoreAssignments() {
+        // You can implement your logic to load more assignments here.
+        // For example, update the 'rowStart' and 'rowEnd' variables to load the next batch of assignments
+        // and then fetch data from the Google Sheet as you did in the initial load.
 
-    /** POTENTIAL METHODS / Issues to Resolve
-    *  SortCourses - Method to Sort the courses by date and color
-    *       - This may require me to read the Google sheet first then create a list of assignments
-    *       - then sort the list of assignments by date and color (This would refresh for every change of Google Sheet)
-    * */
+        // Calculate the current interval based on the number of assignments loaded
+        int assignmentsLoaded = assignmentList.size();
+        int currentInterval = (assignmentsLoaded / (AppConfig.LOAD_INTERVAL + 1)) + 1;
+
+        //Log.d("Debug Log", "**** AssignmentsLoaded: " + assignmentsLoaded + " - CurrentInterval: " + currentInterval);
+
+        // Calculate the start and end positions for the next interval
+        int intervalStart = AppConfig.INTERVAL_START + currentInterval * AppConfig.LOAD_INTERVAL;
+        int intervalEnd = intervalStart + AppConfig.LOAD_INTERVAL - 1;
+        String intervalRange = "A" + intervalStart + ":C" + intervalEnd;
+
+        //Log.d("Debug Log", "****** start: " + intervalStart + " - End: " + intervalEnd);
+
+        // Load the new assignment data from the Google Sheet
+        if (sheetsService != null) {
+            GoogleSheetReader.readDataFromSheet(sheetsService, intervalRange, assignmentDataReadListener);
+        }
+        else {
+            Log.d("Debug Log", "Error loading additional assignments in Main Activity");
+        }
+
+        // After loading more assignments, you can update the assignmentList and notify the adapter:
+        //assignmentAdapter.notifyDataSetChanged();
+
+        // Increment the latestIntervalLoaded
+        //AppConfig.latestIntervalLoaded++;
+
+        // Set loadingMore to false after loading is complete
+        //loadingMore = false; This is now being done in the assignmentDataReadListener
+    }
 
     private Date convertStringToDateFormat(String stringToDate) {
         // String Format: MM/dd/YYYY (Google Sheet view of date)
@@ -203,21 +237,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    private GoogleSheetWriter.DataWriteListener assignmentDataWriteListener = new GoogleSheetWriter.DataWriteListener() {
-        @Override
-        public void onDataWritten() {
-            Log.d("Data writer Debug", "Assignment Data write successful in MainActivity");
-
-            // Close the Add Course dialog
-            alertDialog.dismiss();
-        }
-
-        @Override
-        public void onError(String errorMessage) {
-            Log.e("Data writer Error", "Error writing assignment data in MainActivity: \n" + errorMessage);
-        }
-    };
 
     private GoogleSheetReader.DataReadListener courseDataReadListener = new GoogleSheetReader.DataReadListener() {
 
@@ -275,8 +294,21 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                // Increment the most recently loaded interval
+                AppConfig.latestIntervalLoaded++;
+
                 // Notify the assignment adapter of the read data
                 assignmentAdapter.notifyDataSetChanged();
+
+                Log.d("Debug Log", "Num assignments loaded: " + assignmentList.size());
+
+                // Check if the interval is currently at max capacity
+                if (assignmentList.size() == AppConfig.latestIntervalLoaded * AppConfig.LOAD_INTERVAL) {
+                    AppConfig.intervalAtCapacity = true;
+                }
+
+                // Set loadingMore to false after loading is complete
+                loadingMore = false;
             }
         }
 

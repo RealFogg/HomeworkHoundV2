@@ -129,7 +129,7 @@ public class DialogManager {
                 int writeOnRow = -1;
                 if (editMode) {
                     // Find the row of the item to edit
-                    writeOnRow = AppConfig.intervalStart + position;
+                    writeOnRow = AppConfig.INTERVAL_START + position;
                 }
                 else {
                     // Find the next empty row and create the write range for the row
@@ -143,8 +143,11 @@ public class DialogManager {
                     // Write the new assignment to the Google Sheet
                     GoogleSheetWriter.writeDataToSheet(sheetService, writeRange, dataToWrite, assignmentDataWriteListener);
 
+                    // TODO: Current Issue - When editing an assignment I cant determine the new position to place it
+                    // TODO: - because I am currently performing the sort after the modification
                     // Calculate the interval of the new assignment
-                    int intervalOfNewAssignment = (writeOnRow - AppConfig.intervalStart) / AppConfig.LOAD_INTERVAL + 1;
+                    int intervalOfNewAssignment = (position / (AppConfig.LOAD_INTERVAL)) + 1;  // +1 at end because it is 1 based not 0 based
+                    //int intervalOfNewAssignment = (writeOnRow - AppConfig.intervalStart) / AppConfig.LOAD_INTERVAL + 1;
 
                     // If the interval of the assignment is loaded (Will need to change this later when I sort by due date I think) *************************************
                     if (intervalOfNewAssignment <= AppConfig.latestIntervalLoaded) {
@@ -193,7 +196,7 @@ public class DialogManager {
             public void onClick(View view) {
                 if (sheetService != null) {
                     // Determine which row to delete
-                    int rowToDelete = AppConfig.intervalStart + position;
+                    int rowToDelete = AppConfig.INTERVAL_START + position;
 
                     // Perform the delete operation
                     GoogleSheetRowDeleter.deleteRowFromSheet(sheetService, rowToDelete, assignmentDeleteListener);

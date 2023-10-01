@@ -132,10 +132,10 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                 Assignment clickedAssignment = assignmentList.get(holder.getAdapterPosition());
 
                 // Debug - Show the course details
-                Log.d("AssignmentAdapter", "Binding assignment at position " + holder.getAdapterPosition());
-                Log.d("AssignmentAdapter", "Assignment name: " + clickedAssignment.getAssignmentName());
-                Log.d("AssignmentAdapter", "Course ID: " + clickedAssignment.getCourseId());
-                Log.d("AssignmentAdapter", "Due Date: " + clickedAssignment.getDueDate());
+                Log.d("AssignmentAdapterOC", "Binding assignment at position " + holder.getAdapterPosition());
+                Log.d("AssignmentAdapterOC", "Assignment name: " + clickedAssignment.getAssignmentName());
+                Log.d("AssignmentAdapterOC", "Course ID: " + clickedAssignment.getCourseId());
+                Log.d("AssignmentAdapterOC", "Due Date: " + clickedAssignment.getDueDate());
 
                 // Set the background to a darker color to show the click
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.darkBackground));

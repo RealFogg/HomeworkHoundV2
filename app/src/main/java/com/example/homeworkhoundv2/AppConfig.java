@@ -19,7 +19,8 @@ public class AppConfig {
 
     // Variables for keeping track of loaded items / intervals
     public static final int LOAD_INTERVAL = 20;          // The number of items loaded in each interval
-    public static int latestIntervalLoaded = 1;          // The most recently loaded interval
-    public static final int intervalStart = 14;          // The starting row for the assignments table
+    public static int latestIntervalLoaded = 0;          // The most recently loaded interval
+    public static final int INTERVAL_START = 14;         // The starting row for the assignments table
+    public static boolean intervalAtCapacity = false;    // Is the current interval range at its max capacity
 }
 
