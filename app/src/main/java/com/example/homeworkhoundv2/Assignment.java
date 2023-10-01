@@ -8,19 +8,14 @@ public class Assignment {
     private String assignmentName;
     private Date dueDate;
     private String courseId;
-    private int colorCode;
+    private String uniqueID;
 
+    // TODO: Make all implementations of assignment also include a uniqueID (this will help with querying data)
+    // TODO: Generate the uniqueIDs based on number of assignments rather than user input
     Assignment(String assignmentName, Date dueDate, String courseId) {
         this.assignmentName = assignmentName;
         this.dueDate = dueDate;
         this.courseId = courseId;
-    }
-
-    Assignment(String assignmentName, Date dueDate, String courseId, int colorCode) {
-        this.assignmentName = assignmentName;
-        this.dueDate = dueDate;
-        this.courseId = courseId;
-        this.colorCode = colorCode;
     }
 
     public String getAssignmentName() {
@@ -44,11 +39,11 @@ public class Assignment {
         this.courseId = courseId;
     }
 
-    public int getColorCode() {
-        return colorCode;
+    public String getUniqueID() {
+        return uniqueID;
     }
-    public void setColorCode(int colorCode) {
-        this.colorCode = colorCode;
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
     }
 
     @NonNull
