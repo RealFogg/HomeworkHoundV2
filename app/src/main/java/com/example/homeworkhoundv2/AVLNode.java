@@ -95,63 +95,7 @@ class AVLTree {
         return balance(node);
     }
 
-    // TODO: I am currently writing this myself before asking for help. If not done when returning look at chat for help
-    // TODO: I don't have enough knowledge to do this myself ask chat for help when I start again later
-    // private method to delete an assignment from the tree
-    /*private AVLNode deleteRec(AVLNode node, Assignment assignment) {
-        if (node == null) {
-            return null;
-        }
-
-        // See if the given assignment's due date is <, >,or = to the current node's due date
-        int compare = assignment.getDueDate().compareTo(node.dueDate);
-
-        //
-        if (compare < 0) {
-            // If the assignment due date is < current node's due date then try to delete the left child
-            node.left = deleteRec(node.left, assignment);
-        }
-        else if (compare > 0) {
-            node.right = deleteRec(node.right, assignment);
-        }
-        else {
-            // Due dates are the same
-            // If the node has multiple assignments with the same due date simply remove the given assignment
-            if (node.assignments.size() > 1) {
-                // Remove the given assignment
-                node.assignments.remove(assignment);
-            }
-            else {
-                // If the node has only one assignment remove the entire node
-                if (node.left == null) {
-                    // If the node's left child node is null then return the right child
-                    // (The right sub-tree will be used to override the current node thus deleting the current node)
-                    return node.right;
-                }
-                else if (node.right == null) {
-                    // If the node's right child node is null then return the left child
-                    return node.left;
-                }
-
-                // If both children are NOT null then find the in-order successor
-                AVLNode oldNode = node;
-
-                // Override the current node with the smallest node in the right sub tree
-                node = minNode(node.right);
-
-                // Reassign the old child trees to the new node
-                node.right = oldNode.left;
-                node.left = oldNode.right;
-
-                // Delete the entire oldNode subtree
-                oldNode = deleteSubtree(oldNode);
-
-                // Delete the in-order successor (
-                //node.right = deleteRec(node.right, assignment); maybe not needed
-            }
-        }
-    }*/
-
+    // TODO: Review this then continue working
     // private method to delete an assignment from the tree
     private AVLNode deleteRec(AVLNode node, Assignment assignment) {
         if (node == null) {
