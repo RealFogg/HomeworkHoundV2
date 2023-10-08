@@ -8,7 +8,7 @@ public class Assignment {
     private String assignmentName;
     private Date dueDate;
     private String courseId;
-    private String uniqueID;
+    //private String uniqueID;
 
     // TODO: Make all implementations of assignment also include a uniqueID (this will help with querying data)
     // TODO: Generate the uniqueIDs based on number of assignments rather than user input
@@ -39,12 +39,12 @@ public class Assignment {
         this.courseId = courseId;
     }
 
-    public String getUniqueID() {
+    /*public String getUniqueID() {
         return uniqueID;
     }
     public void setUniqueID(String uniqueID) {
         this.uniqueID = uniqueID;
-    }
+    }*/
 
     @NonNull
     @Override
