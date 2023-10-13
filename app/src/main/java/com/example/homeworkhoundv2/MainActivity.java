@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
     * 3.2) Removing discordantly loaded assignments:
     *       Implement some code to remove intervals of assignments from the currently loaded assignment list.
     *       For example if the current interval is 5 then unload the all intervals except intervals 4,5,6.
+    *
+    * 4) Alternative to AVLTree:
+    *       Instead of AVLTree I can potentially use an double arrayList (List<List<Assignment>>)
+    *       Or a hash map using due dates for the keys and the assignmentList for the value (this may not work cause I don't think maps are ordered)
     * */
 
     //TODO: Make these modifications if possible
