@@ -3,23 +3,30 @@ package com.example.homeworkhoundv2;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class AVLNode {
-    Date dueDate;                    // Due date of the assignment(s) in this node
-    List<Assignment> assignments;    // List of assignments with the same due date
+    Assignment assignment;
     AVLNode left;                    // Reference to left child node
     AVLNode right;                   // Reference to right child node
     int height;                      // Height of this node
 
     public AVLNode(Assignment assignment) {
-        this.dueDate = assignment.getDueDate();
-        this.assignments = new ArrayList<>();
-        this.assignments.add(assignment);
+        this.assignment = assignment;
         this.height = 1;
         this.left = null;
         this.right = null;
     }
 }
+
+/*
+*
+*  Ok so I think the solution to my issues is simple I think what I need to do when modifying assignments
+* in the recycler view is in the dialog manager when I modify the assignment I should only have to
+* call an update method then notify the adapter back in the assignment adapter.
+*
+* I am working on a project in android studio using java. Here is my current AVLNode structure. Would it make more sense to remove the duedate variable since the ass
+*/
 
 // TODO: See if I can make this static so that it is the same AVLTree across all instances(only have to initialize it once)
 class AVLTree {
@@ -53,6 +60,17 @@ class AVLTree {
         return null; // Return the found node or null if not found
     }
 
+    public Assignment getAssignmentAtPosition(int position) {
+        return getAssignmentAtPositionRec(root, position, new AtomicInteger(0));
+    }
+
+    // Public method to get the total number of assignments
+    public int getTotalAssignments() {
+        AtomicInteger count = new AtomicInteger(0); // To keep track of the count
+        countTotalAssignments(root, count);
+        return count.get();
+    }
+
     // Perform an in-order traversal of the tree
     public void inOrderTraversal() {
         // Implement in-order traversal here
@@ -77,7 +95,7 @@ class AVLTree {
         }
 
         // See if the given assignment's due date is <, >,or = to the current node's due date
-        int compare = assignment.getDueDate().compareTo(node.dueDate);
+        int compare = assignment.getDueDate().compareTo(node.assignment.getDueDate());
 
         if (compare < 0) {
             // If the given assignment due date is < current node's due date the try insert on the left child
@@ -88,9 +106,9 @@ class AVLTree {
             node.right = insertRec(node.right, assignment);
         }
         else {
-            // The due date of the given assignment matches the node's due date. So add the assignment
-            // to the assignments list
-            node.assignments.add(assignment);
+            // The due date of the given assignment matches the node's due date. So set the nodes assignment
+            // equal to the given assignment
+            node.assignment = assignment;
         }
 
         // Update the height and balance of the tree
@@ -105,7 +123,7 @@ class AVLTree {
         }
 
         // See if the given assignment's due date is <, >,or = to the current node's due date
-        int compare = assignment.getDueDate().compareTo(node.dueDate);
+        int compare = assignment.getDueDate().compareTo(node.assignment.getDueDate());
 
         if (compare < 0) {
             // If the assignment due date is < current node's due date then try to delete the left child
@@ -116,44 +134,65 @@ class AVLTree {
         }
         else {
             // Due dates are the same
-            // If the node has multiple assignments with the same due date, remove the given assignment
-            if (node.assignments.size() > 1) {
-                // Remove the given assignment if the assignment is equal to one in the assignment list
-                //node.assignments.removeIf(a -> a.equals(assignment));  // option 1
-                node.assignments.remove(assignment);                   // option 2
+            if (node.left == null) {
+                // If the node's left child node is null, return the right child
+                // (The right sub-tree will be used to override the current node, thus deleting the current node)
+                return node.right;
+            } else if (node.right == null) {
+                // If the node's right child node is null, return the left child
+                return node.left;
             }
-            else {
-                // If the node has only one assignment, remove the entire node
-                if (node.left == null) {
-                    // If the node's left child node is null, return the right child
-                    // (The right sub-tree will be used to override the current node, thus deleting the current node)
-                    return node.right;
-                }
-                else if (node.right == null) {
-                    // If the node's right child node is null, return the left child
-                    return node.left;
-                }
 
-                // If both children are NOT null, find the in-order successor
-                AVLNode inOrderSuccessor = minNode(node.right);
+            // If both children are NOT null, find the in-order successor
+            AVLNode inOrderSuccessor = minNode(node.right);
 
-                // Override the current node with the in-order successor
-                node.dueDate = inOrderSuccessor.dueDate;
-                node.assignments = inOrderSuccessor.assignments;
+            // Override the current node with the in-order successor
+            node.assignment = inOrderSuccessor.assignment;
 
-                // Recursively delete the in-order successor from the right subtree
-                node.right = removeSmallestNode(node.right);
-            }
+            // Recursively delete the in-order successor from the right subtree
+            node.right = removeSmallestNode(node.right);
         }
 
-        // Only update the height and balance of the tree when structural change occurs
-        if (node.assignments.size() <= 1) {
-            node.height = 1 + Math.max(calculateHeight(node.left), calculateHeight(node.right));
-            return balance(node);
+        // Balance the tree
+        node.height = 1 + Math.max(calculateHeight(node.left), calculateHeight(node.right));
+        return balance(node);
+    }
+
+    // Method to get the assignment at the given target position. Best case O(1), Worst case O(n)
+    private Assignment getAssignmentAtPositionRec(AVLNode node, int targetPosition, AtomicInteger currentPosition) {
+        if (node == null) {
+            return null; // Assignment not found
         }
 
-        // If the structure doesn't change (no node deleted) then return the current node
-        return node;
+        // Traverse the left subtree
+        Assignment leftResult = getAssignmentAtPositionRec(node.left, targetPosition, currentPosition);
+
+        if (leftResult != null) {
+            return leftResult; // Assignment found in the left subtree
+        }
+
+        // Check if the current node is the target position (getAndIncrement() returns the current
+        // position then increments)
+        if (currentPosition.getAndIncrement() == targetPosition) {
+            return node.assignment; // Assignment found
+        }
+
+        // Traverse the right subtree
+        return getAssignmentAtPositionRec(node.right, targetPosition, currentPosition);
+    }
+
+    // Helper method for counting assignments using in-order traversal
+    private void countTotalAssignments(AVLNode node, AtomicInteger count) {
+        if (node != null) {
+            // Traverse left subtree
+            countTotalAssignments(node.left, count);
+
+            // Process the current node (in this case, just increment the count)
+            count.getAndIncrement();
+
+            // Traverse right subtree
+            countTotalAssignments(node.right, count);
+        }
     }
 
     // Balance the AVL tree (perform rotations)

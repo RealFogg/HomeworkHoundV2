@@ -25,7 +25,8 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 
 public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.AssignmentViewHolder> {
-    private List<Assignment> assignmentList;
+    private AVLTree assignmentTree;
+    //private List<Assignment> assignmentList;
     private Context context;
     private Sheets sheetService;
     //private GoogleSheetWriter.DataWriteListener assignmentDataWriteListener;
@@ -33,12 +34,13 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
     private DialogManager dialogManager;
 
     // Constructor to initialize the adapter with data
-    public AssignmentAdapter(Context context, List<Assignment> assignmentList, Sheets sheetService) {
+    public AssignmentAdapter(Context context, AVLTree assignmentTree/*List<Assignment> assignmentList*/, Sheets sheetService) {
         this.context = context;
-        this.assignmentList = assignmentList;
+        this.assignmentTree = assignmentTree;
+        //this.assignmentList = assignmentList;
         this.sheetService = sheetService;
-        //this.assignmentDataWriteListener = assignmentDataWriteListener;
 
+        // TODO: When I return start converting the dialog manager to assignmentTree
         // Initialize the DialogManager
         dialogManager = new DialogManager(context, assignmentList, sheetService,
                 new DialogManager.AssignmentUpdateListener() {
@@ -94,7 +96,8 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
     @Override
     public void onBindViewHolder(AssignmentViewHolder holder, int position) {
         // Bind data to the UI elements of the ViewHolder
-        Assignment assignment = assignmentList.get(position);
+        //Assignment assignment = assignmentList.get(position); ****OLD
+        Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
         holder.assignmentNameTextView.setText(assignment.getAssignmentName());
         //holder.dueDateTextView.setText(assignment.getDueDate());
         holder.courseIdTextView.setText(assignment.getCourseId());
@@ -128,14 +131,17 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Access the Selected item (prep it for updating or deleting)
-                Assignment clickedAssignment = assignmentList.get(holder.getAdapterPosition());
+                // Access the Selected item (prep it for updating or deleting)  ****OLD
+                //Assignment clickedAssignment = assignmentList.get(holder.getAdapterPosition());   ****OLD
 
                 // Debug - Show the course details
                 Log.d("AssignmentAdapterOC", "Binding assignment at position " + holder.getAdapterPosition());
-                Log.d("AssignmentAdapterOC", "Assignment name: " + clickedAssignment.getAssignmentName());
-                Log.d("AssignmentAdapterOC", "Course ID: " + clickedAssignment.getCourseId());
-                Log.d("AssignmentAdapterOC", "Due Date: " + clickedAssignment.getDueDate());
+                //Log.d("AssignmentAdapterOC", "Assignment name: " + clickedAssignment.getAssignmentName());  ****OLD
+                //Log.d("AssignmentAdapterOC", "Course ID: " + clickedAssignment.getCourseId());  ****OLD
+                //Log.d("AssignmentAdapterOC", "Due Date: " + clickedAssignment.getDueDate());  ****OLD
+                Log.d("AssignmentAdapterOC", "Assignment name: " + assignment.getAssignmentName());
+                Log.d("AssignmentAdapterOC", "Course ID: " + assignment.getCourseId());
+                Log.d("AssignmentAdapterOC", "Due Date: " + assignment.getDueDate());
 
                 // Set the background to a darker color to show the click
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.darkBackground));
@@ -150,14 +156,15 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                 }, 150);
 
                 // Show the edit assignment dialog using the DialogManager
-                dialogManager.AssignmentModificationDialog(clickedAssignment, holder.getAdapterPosition());
+                dialogManager.AssignmentModificationDialog(assignment, holder.getAdapterPosition());
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return assignmentList.size();
+        return assignmentTree.getTotalAssignments();
+        //return assignmentList.size();
     }
 
     private int getColorPosition(String colorCode) {
@@ -177,7 +184,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         }
     }
 
-    public void sortAssignmentsByDueDate() {
+    /*public void sortAssignmentsByDueDate() {
         assignmentList.sort(new Comparator<Assignment>() {
             @Override
             public int compare(Assignment assignment1, Assignment assignment2) {
@@ -185,6 +192,6 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                 return assignment1.getDueDate().compareTo(assignment2.getDueDate());
             }
         });
-    }
+    }*/
 
 }
