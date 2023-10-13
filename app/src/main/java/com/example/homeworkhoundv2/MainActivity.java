@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private int nextRowEnd;                        // The next ending row of assignments to load
     private boolean loadingMore = false;                         // Is the program currently loading more assignments
     private List<Assignment> assignmentList;
+    private AVLTree assignmentTree;
     private AssignmentAdapter assignmentAdapter;
     private List<Course> courseList;
     private CourseAdapter courseAdapter;
@@ -102,11 +103,18 @@ public class MainActivity extends AppCompatActivity {
         // Get the current courseList (If list is empty it is initialized as a new ArrayList<>())
         courseList = courseListSingleton.getCourseList();
 
+        // Initialize the Assignment adapter and recycler view (OLD assignment stuff)
+        //assignmentList = new ArrayList<>();
+        //assignmentAdapter = new AssignmentAdapter(this, assignmentList, sheetsService);
+        //assignmentRecyclerView.setAdapter(assignmentAdapter);
+
         // Initialize the Assignment adapter and recycler view
-        assignmentList = new ArrayList<>();
-        assignmentAdapter = new AssignmentAdapter(this, assignmentList, sheetsService);
+        assignmentTree = new AVLTree();
+        assignmentAdapter = new AssignmentAdapter(this, assignmentTree, sheetsService);
         assignmentRecyclerView.setAdapter(assignmentAdapter);
 
+        // TODO: Because I am using an AVLTree Loading in a lot of data at once should not be a big deal
+        // TODO: So I wont need to load in intervals I think. However I may need to cap the number of assignments.
         // Set the initial range to load
         String initialRange = "A" + rowStart + ":C" + rowEnd;
 
@@ -127,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Initialize the dialogManager (for adding assignments)
-        //dialogManager = new DialogManager(this, assignmentList, courseAdapter, sheetsService, assignmentUpdateListener);
-        dialogManager = new DialogManager(this, assignmentList, sheetsService, assignmentUpdateListener);
+        //dialogManager = new DialogManager(this, assignmentList, sheetsService, assignmentUpdateListener);
+        dialogManager = new DialogManager(this, assignmentTree, sheetsService, assignmentUpdateListener);
 
         /******************* On Click Listeners for Buttons *************************/
         // Set a click listener for the Add Course editCourseButton
@@ -155,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
          * of the next highest interval after the current interval then I can remove 20 assignments from
          * the end of the assignment list **/
         // Set a scroll listener to detect when the user reaches the end of the RecyclerView
+        // TODO: I might still use this to load the assignment views but will have to modify so doesn't load more from GSheet
         assignmentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -165,10 +174,11 @@ public class MainActivity extends AppCompatActivity {
 
                 // Check if it's not already loading more and the user is at the end of the list
                 if (AppConfig.intervalAtCapacity && !loadingMore && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount) {
-                    loadingMore = true;
+                    //loadingMore = true;
 
                     // Load more assignments here
-                    loadMoreAssignments();
+                    //loadMoreAssignments();
+
                     //Log.d("Debug Log", "Inside loading more area ************************" + totalItemCount);
                 }
             }
@@ -287,7 +297,10 @@ public class MainActivity extends AppCompatActivity {
                         Date dueDate = convertStringToDateFormat(row.get(1).toString());
                         String courseID = row.get(2).toString();
                         Assignment assignment = new Assignment(assignmentName, dueDate, courseID);
-                        assignmentList.add(assignment);
+                        //assignmentList.add(assignment);
+
+                        // Add the assignment to the AVLTree
+                        assignmentTree.insert(assignment);
                     }
                     else {
                         break;
@@ -300,8 +313,9 @@ public class MainActivity extends AppCompatActivity {
                 // Notify the assignment adapter of the read data
                 assignmentAdapter.notifyDataSetChanged();
 
-                Log.d("Debug Log", "Num assignments loaded: " + assignmentList.size());
+                //Log.d("Debug Log", "Num assignments loaded: " + assignmentList.size());
 
+                // TODO: Left off here keep converting assignmentList to assignmentTree
                 // Check if the interval is currently at max capacity
                 if (assignmentList.size() == AppConfig.latestIntervalLoaded * AppConfig.LOAD_INTERVAL) {
                     AppConfig.intervalAtCapacity = true;

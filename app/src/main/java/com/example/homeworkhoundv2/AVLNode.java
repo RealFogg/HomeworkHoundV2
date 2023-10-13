@@ -32,6 +32,8 @@ class AVLTree {
         root = null;
     }
 
+    // TODO: Add destructor
+
     /**     Public Methods     **/
 
     // Insert an assignment into the tree
@@ -42,6 +44,7 @@ class AVLTree {
     // Delete an assignment from the tree
     public void delete(Assignment assignment) {
         // Implement deletion logic here
+        deleteRec(root, assignment);
     }
 
     // Search for an assignment in the tree
@@ -95,7 +98,6 @@ class AVLTree {
         return balance(node);
     }
 
-    // TODO: Review this then continue working
     // private method to delete an assignment from the tree
     private AVLNode deleteRec(AVLNode node, Assignment assignment) {
         if (node == null) {
@@ -117,7 +119,8 @@ class AVLTree {
             // If the node has multiple assignments with the same due date, remove the given assignment
             if (node.assignments.size() > 1) {
                 // Remove the given assignment if the assignment is equal to one in the assignment list
-                node.assignments.removeIf(a -> a.equals(assignment));
+                //node.assignments.removeIf(a -> a.equals(assignment));  // option 1
+                node.assignments.remove(assignment);                   // option 2
             }
             else {
                 // If the node has only one assignment, remove the entire node
@@ -276,7 +279,7 @@ class AVLTree {
     private AVLNode removeSmallestNode(AVLNode node) {
         if (node.left == null) {
             // If the left child is null, this is the smallest node
-            // Return the right child, effectively removing this node
+            // Return the right child, effectively removing this node (and replacing it with the right child)
             return node.right;
         }
 
