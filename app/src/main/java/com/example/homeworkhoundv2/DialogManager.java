@@ -27,7 +27,8 @@ import java.util.List;
 public class DialogManager {
     private Context context;
     private AlertDialog alertDialog;
-    private List<Assignment> assignmentList;
+    private AVLTree assignmentTree;
+    //private List<Assignment> assignmentList;
     private Sheets sheetService;
     private AssignmentUpdateListener assignmentUpdateListener;
 
@@ -46,11 +47,12 @@ public class DialogManager {
         }
     }
 
-    public DialogManager(Context context, List<Assignment> assignmentList, Sheets sheetService,
+    public DialogManager(Context context, AVLTree assignmentTree/*List<Assignment> assignmentList*/, Sheets sheetService,
                          AssignmentUpdateListener assignmentUpdateListener) {
 
         this.context = context;
-        this.assignmentList = assignmentList;
+        this.assignmentTree = assignmentTree;
+        //this.assignmentList = assignmentList;
         this.sheetService = sheetService;
         this.assignmentUpdateListener = assignmentUpdateListener;
     }

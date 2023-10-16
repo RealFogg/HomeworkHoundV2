@@ -42,15 +42,16 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
 
         // TODO: When I return start converting the dialog manager to assignmentTree
         // Initialize the DialogManager
-        dialogManager = new DialogManager(context, assignmentList, sheetService,
+        dialogManager = new DialogManager(context, assignmentTree, sheetService,
                 new DialogManager.AssignmentUpdateListener() {
                     @Override
                     public void onAssignmentUpdated(Assignment assignment, int position) {
                         // Handle the update of an existing assignment
-                        assignmentList.set(position, assignment);
+                        //assignmentList.set(position, assignment);
+                        // TODO: Need method to modify data in the tree of setup a delete in dialog Manaager and insert here
 
                         // Sort the assignment list
-                        sortAssignmentsByDueDate();
+                        //sortAssignmentsByDueDate();
 
                         // Notify the adapter about the data change
                         //notifyItemChanged(position);
@@ -60,7 +61,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                     @Override
                     public void onAssignmentDeleted(Assignment assignment, int position) {
                         // Remove the assignment from the local assignmentList
-                        assignmentList.remove(assignment);
+                        //assignmentList.remove(assignment);
 
                         // Notify the adapter about the data change
                         notifyItemRemoved(position);
