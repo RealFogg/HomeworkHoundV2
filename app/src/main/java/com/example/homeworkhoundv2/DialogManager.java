@@ -39,7 +39,7 @@ public class DialogManager {
         default void onAssignmentAdded(Assignment assignment, int position) {
             // Default implementation, no action needed
         }
-        default void onAssignmentUpdated(Assignment assignment, int position){
+        default void onAssignmentUpdated(Assignment targetAssignment, Assignment newAssignment, int position){
             // Default implementation, no action needed
         }
         default void onAssignmentDeleted(Assignment assignment, int position){
@@ -162,7 +162,7 @@ public class DialogManager {
                             //assignmentList.set(position, newAssignment);
 
                             // Notify the adapter that a new assignment has been edited
-                            assignmentUpdateListener.onAssignmentUpdated(newAssignment, position);
+                            assignmentUpdateListener.onAssignmentUpdated(assignment, newAssignment, position);
                         }
                         else {
                             //assignmentList.add(newAssignment);

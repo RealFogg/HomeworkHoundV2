@@ -47,10 +47,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         dialogManager = new DialogManager(context, assignmentTree, sheetService,
                 new DialogManager.AssignmentUpdateListener() {
                     @Override
-                    public void onAssignmentUpdated(Assignment assignment, int position) {
+                    public void onAssignmentUpdated(Assignment targetAssignment, Assignment newAssignment, int position) {
                         // Handle the update of an existing assignment
                         //assignmentList.set(position, assignment);
                         // TODO: Need method to modify data in the tree or setup a delete in dialog Manaager and insert here (A modify method or delete and insert here)
+                        assignmentTree.updateAssignment(targetAssignment, newAssignment);
 
                         // Sort the assignment list
                         //sortAssignmentsByDueDate();
@@ -64,6 +65,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                     public void onAssignmentDeleted(Assignment assignment, int position) {
                         // Remove the assignment from the local assignmentList
                         //assignmentList.remove(assignment);
+                        assignmentTree.delete(assignment);
 
                         // Notify the adapter about the data change
                         notifyItemRemoved(position);
@@ -100,17 +102,21 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
     public void onBindViewHolder(AssignmentViewHolder holder, int position) {
         // Bind data to the UI elements of the ViewHolder
         //Assignment assignment = assignmentList.get(position); ****OLD
-        //Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
 
-        String assignmentNameStr = holder.assignmentNameTextView.getText().toString();
-        String dueDateStr = holder.dueDateTextView.getText().toString();
-        String courseIDStr = holder.courseIdTextView.getText().toString();
+        // TODO: Ending here today. Im trying to find a new way to get assignments based on the position in this method
+        // I might be able to use an array list along side the AVLTree in such a way that the AVLTree
+        // Handles all the searching, modifying, deleting, and inserting. And updates the arraylist accordingly.
+        // Then I could use the arraylist for edge cases like this where I need to get the assignment
+        // based on position.
 
-        Date dueDate = convertStringToDateFormat(dueDateStr);
+        // This works but may be inefficient (might look for new method).
+        Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
+
+        //Date dueDate = convertStringToDateFormat(dueDateStr);
 
         //Assignment tempAssignment = new Assignment(assignmentNameStr, dueDate, courseIDStr);
 
-        Assignment assignment = assignmentTree.search(assignmentNameStr, dueDate, courseIDStr);
+        //Assignment assignment = assignmentTree.search(assignmentNameStr, dueDate, courseIDStr);
 
         holder.assignmentNameTextView.setText(assignment.getAssignmentName());
         holder.courseIdTextView.setText(assignment.getCourseId());
@@ -157,6 +163,16 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                 Log.d("AssignmentAdapterOC", "Course ID: " + assignment.getCourseId());
                 Log.d("AssignmentAdapterOC", "Due Date: " + assignment.getDueDate());
 
+                // Debug THIS WORKS But doesn't fix the issue at the start of the onBindViewHolder ********************
+                String assignmentNameStr = holder.assignmentNameTextView.getText().toString();
+                String dueDateStr = holder.dueDateTextView.getText().toString();
+                String courseIDStr = holder.courseIdTextView.getText().toString();
+
+                Log.d("AssAdap Debug", "Holder assignmentNameStr: " + assignmentNameStr);
+                Log.d("AssAdap Debug", "Holder dueDateStr: " + dueDateStr);
+                Log.d("AssAdap Debug", "Holder courseIDStr: " + courseIDStr);
+                //
+
                 // Set the background to a darker color to show the click
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.darkBackground));
 
@@ -202,6 +218,14 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
     private Date convertStringToDateFormat(String stringToDate) {
         // String Format: MM/dd/YYYY (Google Sheet view of date)
         try {
+            return AppConfig.googleDateFormat.parse(stringToDate);
+        } catch (ParseException e) {
+            Log.e("Date Error", "Error occurred converting string to date");
+            e.printStackTrace();
+            return null;
+        }
+
+        /*try {
             return AppConfig.shortDate.parse(stringToDate);
         }
         catch (ParseException e) {
@@ -218,12 +242,12 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                     }
                     catch (ParseException exception) {
                         Log.e("Date Error", "Error occurred converting string to date");
-                        exception.printStackTrace();
+                        //exception.printStackTrace();
                         return null;
                     }
                 }
             }
-        }
+        }*/
     }
 
     /*public void sortAssignmentsByDueDate() {

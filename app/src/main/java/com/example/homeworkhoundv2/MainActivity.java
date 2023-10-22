@@ -125,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize the course list and assignment list using data from the Google Sheet
         if (sheetsService != null) {
-            GoogleSheetReader.readDataFromSheet(sheetsService, courseRange, courseDataReadListener);
-            GoogleSheetReader.readDataFromSheet(sheetsService, initialRange, assignmentDataReadListener);
-
             // The total number of assignments cell
             String totalAssignmentsCell = "B12:B12";
             // Read in the total number of assignments
             GoogleSheetReader.readDataFromSheet(sheetsService, totalAssignmentsCell, totalAssignmentDataReadListener);
+
+            GoogleSheetReader.readDataFromSheet(sheetsService, courseRange, courseDataReadListener);
+            //GoogleSheetReader.readDataFromSheet(sheetsService, initialRange, assignmentDataReadListener);
         }
 
         // Initialize the dialogManager (for adding assignments)
@@ -313,13 +313,15 @@ public class MainActivity extends AppCompatActivity {
                 // Notify the assignment adapter of the read data
                 assignmentAdapter.notifyDataSetChanged();
 
+                // DEBUG: Checking if data is being written into the AVLTree from the google sheet
+                assignmentTree.printAllAssignments();
+
                 //Log.d("Debug Log", "Num assignments loaded: " + assignmentList.size());
 
-                // TODO: Left off here keep converting assignmentList to assignmentTree
                 // Check if the interval is currently at max capacity
-                if (assignmentList.size() == AppConfig.latestIntervalLoaded * AppConfig.LOAD_INTERVAL) {
+                /*if (assignmentList.size() == AppConfig.latestIntervalLoaded * AppConfig.LOAD_INTERVAL) {
                     AppConfig.intervalAtCapacity = true;
-                }
+                }*/
 
                 // Set loadingMore to false after loading is complete
                 loadingMore = false;
@@ -340,6 +342,13 @@ public class MainActivity extends AppCompatActivity {
             if (values != null) {
                 List<Object> row = values.get(0);
                 AppConfig.totalAssignmentsCount = Integer.parseInt(row.get(0).toString());
+                Log.d("Main Activity Debug", "Total Assignment Count: " + AppConfig.totalAssignmentsCount);
+
+                // TODO: Temporary: Setting the initial range to load all items in GoogleSheet replace later with proper interval loading maybe?
+                int endRow = rowStart + AppConfig.totalAssignmentsCount;
+                String initialRange = "A" + rowStart + ":C" + endRow;
+
+                GoogleSheetReader.readDataFromSheet(sheetsService, initialRange, assignmentDataReadListener);
             }
         }
 
@@ -353,10 +362,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onAssignmentAdded(Assignment assignment, int position) {
             // Update the local assignmentList
-            assignmentList.add(assignment);
+            //assignmentList.add(assignment);
+
+            // Update the local assignmentTree
+            assignmentTree.insert(assignment);
 
             // Sort the the list
-            sortAssignmentsByDueDate();
+            //sortAssignmentsByDueDate();
 
             // Refresh the UI
             assignmentAdapter.notifyDataSetChanged();

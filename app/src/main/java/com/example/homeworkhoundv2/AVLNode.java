@@ -1,9 +1,8 @@
 package com.example.homeworkhoundv2;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
+import android.util.Log;
+
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 class AVLNode {
@@ -40,23 +39,22 @@ class AVLTree {
         root = null;
     }
 
-    // TODO: Add destructor
-
     /**     Public Methods     **/
 
     // Insert an assignment into the tree
     public void insert(Assignment assignment) {
-        insertRec(root, assignment);
+        Log.d("AVLTree Debug", "Starting insert");
+        root = insertRec(root, assignment);
     }
 
     // Delete an assignment from the tree
     public void delete(Assignment assignment) {
-        deleteRec(root, assignment);
+        root = deleteRec(root, assignment);
     }
 
     // Modify an assignment in the tree
-    public void UpdateAssignment(Assignment targetAssignment, Assignment updatedAssignment) {
-        UpdateAssignmentRec(root, targetAssignment, updatedAssignment);
+    public void updateAssignment(Assignment targetAssignment, Assignment updatedAssignment) {
+        root = updateAssignmentRec(root, targetAssignment, updatedAssignment);
     }
 
     // Search for an assignment in the tree
@@ -93,9 +91,9 @@ class AVLTree {
         return count.get();
     }
 
-    // Perform an in-order traversal of the tree
-    public void inOrderTraversal() {
-        // Implement in-order traversal here
+    public void printAllAssignments() {
+        Log.d("AVLTree Debug", "Start of print all");
+        inOrderTraversal(root);
     }
 
     // Perform a pre-order traversal of the tree
@@ -131,11 +129,11 @@ class AVLTree {
         else {
             // The due date of the given assignment matches the node's due date. So set the nodes assignment
             // equal to the given assignment
-            //node.assignment = assignment;
+            node.assignment = assignment;
 
             // The due date of the given assignment matches the node's due date, assignment name, and course ID
             // So I can simply return null because I don't want to insert duplicates.
-            return null;
+            //return null;
         }
 
         // Update the height and balance of the tree
@@ -187,7 +185,7 @@ class AVLTree {
     }
 
     // Method to modify / update and assignment in the tree
-    private AVLNode UpdateAssignmentRec(AVLNode node, Assignment targetAssignment, Assignment updatedAssignment) {
+    private AVLNode updateAssignmentRec(AVLNode node, Assignment targetAssignment, Assignment updatedAssignment) {
         if (node == null) {
             return null; // Not modifying leaf nodes
         }
@@ -198,11 +196,11 @@ class AVLTree {
 
         if (comparator < 0) {
             // If the cur assignment if < 0 then insert to the left
-            node.left = UpdateAssignmentRec(node.left, targetAssignment, updatedAssignment);
+            node.left = updateAssignmentRec(node.left, targetAssignment, updatedAssignment);
         }
         else if (comparator > 0) {
             // If the cur assignment is > 0 then insert to the right
-            node.right = UpdateAssignmentRec(node.right, targetAssignment, updatedAssignment);
+            node.right = updateAssignmentRec(node.right, targetAssignment, updatedAssignment);
         }
         else {
             // Match found
@@ -417,5 +415,21 @@ class AVLTree {
         // Update the height and balance of the tree (Occurs after all recursion is done)
         node.height = 1 + Math.max(calculateHeight(node.left), calculateHeight(node.right));
         return balance(node);
+    }
+
+    // Perform an in-order traversal of the tree and print assignments
+    private void inOrderTraversal(AVLNode node) {
+        if (node != null) {
+            // Traverse the left subtree
+            inOrderTraversal(node.left);
+
+            // Process the current node (print assignment details to logcat)
+            Log.d("AVLTree Debug", "Assignment Name: " + node.assignment.getAssignmentName());
+            Log.d("AVLTree Debug", "Due Date: " + node.assignment.getDueDate());
+            Log.d("AVLTree Debug", "Course ID: " + node.assignment.getCourseId());
+
+            // Traverse the right subtree
+            inOrderTraversal(node.right);
+        }
     }
 }
