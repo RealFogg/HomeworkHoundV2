@@ -252,6 +252,7 @@ public class DialogManager {
         datePickerDialog.show();
     }
 
+    // TODO: Move this to another class and make it static
     private Date convertStringToDateFormat(String stringToDate) {
         // String Format: MM/dd/YYYY (Google Sheet view of date)
         try {

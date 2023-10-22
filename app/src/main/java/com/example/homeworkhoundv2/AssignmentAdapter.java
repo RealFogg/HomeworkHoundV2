@@ -18,8 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.homeworkhoundv2.Assignment;
 import com.google.api.services.sheets.v4.Sheets;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.text.SimpleDateFormat;
@@ -48,7 +50,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                     public void onAssignmentUpdated(Assignment assignment, int position) {
                         // Handle the update of an existing assignment
                         //assignmentList.set(position, assignment);
-                        // TODO: Need method to modify data in the tree of setup a delete in dialog Manaager and insert here
+                        // TODO: Need method to modify data in the tree or setup a delete in dialog Manaager and insert here (A modify method or delete and insert here)
 
                         // Sort the assignment list
                         //sortAssignmentsByDueDate();
@@ -98,9 +100,19 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
     public void onBindViewHolder(AssignmentViewHolder holder, int position) {
         // Bind data to the UI elements of the ViewHolder
         //Assignment assignment = assignmentList.get(position); ****OLD
-        Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
+        //Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
+
+        String assignmentNameStr = holder.assignmentNameTextView.getText().toString();
+        String dueDateStr = holder.dueDateTextView.getText().toString();
+        String courseIDStr = holder.courseIdTextView.getText().toString();
+
+        Date dueDate = convertStringToDateFormat(dueDateStr);
+
+        //Assignment tempAssignment = new Assignment(assignmentNameStr, dueDate, courseIDStr);
+
+        Assignment assignment = assignmentTree.search(assignmentNameStr, dueDate, courseIDStr);
+
         holder.assignmentNameTextView.setText(assignment.getAssignmentName());
-        //holder.dueDateTextView.setText(assignment.getDueDate());
         holder.courseIdTextView.setText(assignment.getCourseId());
 
         // Get the Current course list
@@ -134,6 +146,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
             public void onClick(View view) {
                 // Access the Selected item (prep it for updating or deleting)  ****OLD
                 //Assignment clickedAssignment = assignmentList.get(holder.getAdapterPosition());   ****OLD
+                //String text = holder.assignmentNameTextView.getText().toString(); // This should work
 
                 // Debug - Show the course details
                 Log.d("AssignmentAdapterOC", "Binding assignment at position " + holder.getAdapterPosition());
@@ -185,6 +198,34 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         }
     }
 
+    // TODO: Move this to another class and make it static
+    private Date convertStringToDateFormat(String stringToDate) {
+        // String Format: MM/dd/YYYY (Google Sheet view of date)
+        try {
+            return AppConfig.shortDate.parse(stringToDate);
+        }
+        catch (ParseException e) {
+            try {
+                return AppConfig.shortMonthDate.parse(stringToDate);
+            }
+            catch (ParseException ex) {
+                try {
+                    return AppConfig.shortDayDate.parse(stringToDate);
+                }
+                catch (ParseException exc) {
+                    try {
+                        return AppConfig.longDate.parse(stringToDate);
+                    }
+                    catch (ParseException exception) {
+                        Log.e("Date Error", "Error occurred converting string to date");
+                        exception.printStackTrace();
+                        return null;
+                    }
+                }
+            }
+        }
+    }
+
     /*public void sortAssignmentsByDueDate() {
         assignmentList.sort(new Comparator<Assignment>() {
             @Override
@@ -194,5 +235,4 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
             }
         });
     }*/
-
 }

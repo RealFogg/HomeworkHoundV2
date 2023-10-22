@@ -1,5 +1,6 @@
 package com.example.homeworkhoundv2;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,14 +51,35 @@ class AVLTree {
 
     // Delete an assignment from the tree
     public void delete(Assignment assignment) {
-        // Implement deletion logic here
         deleteRec(root, assignment);
+    }
+
+    // Modify an assignment in the tree
+    public void UpdateAssignment(Assignment targetAssignment, Assignment updatedAssignment) {
+        UpdateAssignmentRec(root, targetAssignment, updatedAssignment);
     }
 
     // Search for an assignment in the tree
     public AVLNode search(Assignment assignment) {
         // Implement search logic here
         return null; // Return the found node or null if not found
+    }
+
+    /** Method to search for an assignment based on the following parameters
+     * Parameters:
+     *      assignmentName
+     *      dueDate
+     *      courseID
+     * Returns:
+     *      The assignment that matches the parameters or null if no match found*/
+    public Assignment search(String assignmentNameStr, Date dueDate, String courseIDStr) {
+        Assignment temp = new Assignment(assignmentNameStr, dueDate, courseIDStr);
+        if (searchByAssignmentRec(root, temp)) {
+            return temp;
+        }
+        else {
+            return null;
+        }
     }
 
     public Assignment getAssignmentAtPosition(int position) {
@@ -95,7 +117,8 @@ class AVLTree {
         }
 
         // See if the given assignment's due date is <, >,or = to the current node's due date
-        int compare = assignment.getDueDate().compareTo(node.assignment.getDueDate());
+        //int compare = assignment.getDueDate().compareTo(node.assignment.getDueDate());
+        int compare = assignment.compareTo(node.assignment);
 
         if (compare < 0) {
             // If the given assignment due date is < current node's due date the try insert on the left child
@@ -108,7 +131,11 @@ class AVLTree {
         else {
             // The due date of the given assignment matches the node's due date. So set the nodes assignment
             // equal to the given assignment
-            node.assignment = assignment;
+            //node.assignment = assignment;
+
+            // The due date of the given assignment matches the node's due date, assignment name, and course ID
+            // So I can simply return null because I don't want to insert duplicates.
+            return null;
         }
 
         // Update the height and balance of the tree
@@ -123,7 +150,8 @@ class AVLTree {
         }
 
         // See if the given assignment's due date is <, >,or = to the current node's due date
-        int compare = assignment.getDueDate().compareTo(node.assignment.getDueDate());
+        //int compare = assignment.getDueDate().compareTo(node.assignment.getDueDate());
+        int compare = assignment.compareTo(node.assignment);
 
         if (compare < 0) {
             // If the assignment due date is < current node's due date then try to delete the left child
@@ -133,7 +161,7 @@ class AVLTree {
             node.right = deleteRec(node.right, assignment);
         }
         else {
-            // Due dates are the same
+            // Due dates, assignment name, and courseID are the same (Match found)
             if (node.left == null) {
                 // If the node's left child node is null, return the right child
                 // (The right sub-tree will be used to override the current node, thus deleting the current node)
@@ -156,6 +184,67 @@ class AVLTree {
         // Balance the tree
         node.height = 1 + Math.max(calculateHeight(node.left), calculateHeight(node.right));
         return balance(node);
+    }
+
+    // Method to modify / update and assignment in the tree
+    private AVLNode UpdateAssignmentRec(AVLNode node, Assignment targetAssignment, Assignment updatedAssignment) {
+        if (node == null) {
+            return null; // Not modifying leaf nodes
+        }
+
+        // Compare the given assignment's due date to the due date of the current node
+        //int comparator = assignment.getDueDate().compareTo(node.assignment.getDueDate());
+        int comparator = targetAssignment.compareTo(node.assignment);
+
+        if (comparator < 0) {
+            // If the cur assignment if < 0 then insert to the left
+            node.left = UpdateAssignmentRec(node.left, targetAssignment, updatedAssignment);
+        }
+        else if (comparator > 0) {
+            // If the cur assignment is > 0 then insert to the right
+            node.right = UpdateAssignmentRec(node.right, targetAssignment, updatedAssignment);
+        }
+        else {
+            // Match found
+            if (node.assignment.getDueDate().compareTo(updatedAssignment.getDueDate()) == 0) {
+                // New and old due dates are the same so I don't need to move any node or balance.
+                node.assignment = updatedAssignment;
+                return node;
+            }
+            else {
+                // Delete the current node
+                root = deleteRec(root, targetAssignment);
+
+                // Insert the a new node with the updated assignment
+                root = insertRec(root, updatedAssignment);
+            }
+        }
+
+        // Update the height and balance the tree
+        node.height = 1 + Math.max(calculateHeight(node.left), calculateHeight(node.right));
+        return balance(node);
+    }
+
+    // Method to search for a specific assignment
+    private boolean searchByAssignmentRec(AVLNode node, Assignment targetAssignment) {
+        if (node == null) {
+            return false; // Ignore Leaf node
+        }
+
+        int compare = targetAssignment.compareTo(node.assignment);
+
+        if (compare < 0) {
+            // If < 0 search left tree
+            return searchByAssignmentRec(node.left, targetAssignment);
+        }
+        else if (compare > 0) {
+            // If > 0 search right tree
+            return searchByAssignmentRec(node.right, targetAssignment);
+        }
+        else {
+            // TargetAssignment matches the current node's date, name, and courseID (Match found)
+            return true;
+        }
     }
 
     // Method to get the assignment at the given target position. Best case O(1), Worst case O(n)

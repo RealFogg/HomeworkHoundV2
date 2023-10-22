@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         //assignmentAdapter.notifyDataSetChanged();
 
         // Increment the latestIntervalLoaded
-        //AppConfig.latestIntervalLoaded++;
+        // AppConfig.latestIntervalLoaded++;
 
         // Set loadingMore to false after loading is complete
         //loadingMore = false; This is now being done in the assignmentDataReadListener
