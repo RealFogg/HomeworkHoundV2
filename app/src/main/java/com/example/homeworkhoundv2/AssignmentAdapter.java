@@ -58,6 +58,11 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
 
                         // Notify the adapter about the data change
                         //notifyItemChanged(position);
+
+                        // TODO: I don't think this is working as intended or at least it does not appear to be updating
+                        // correctly. I might have to implement a new system where I simply delete the old
+                        // assignment then insert the updated version. Or I need to figure out how I can
+                        // properly notify the adapter that the change occurred
                         notifyDataSetChanged();
                     }
 
@@ -103,20 +108,12 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         // Bind data to the UI elements of the ViewHolder
         //Assignment assignment = assignmentList.get(position); ****OLD
 
-        // TODO: Ending here today. Im trying to find a new way to get assignments based on the position in this method
-        // I might be able to use an array list along side the AVLTree in such a way that the AVLTree
-        // Handles all the searching, modifying, deleting, and inserting. And updates the arraylist accordingly.
-        // Then I could use the arraylist for edge cases like this where I need to get the assignment
-        // based on position.
-
         // This works but may be inefficient (might look for new method).
         Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
 
-        //Date dueDate = convertStringToDateFormat(dueDateStr);
-
-        //Assignment tempAssignment = new Assignment(assignmentNameStr, dueDate, courseIDStr);
-
-        //Assignment assignment = assignmentTree.search(assignmentNameStr, dueDate, courseIDStr);
+        //Date dueDate = convertStringToDateFormat(dueDateStr);****OLD
+        //Assignment tempAssignment = new Assignment(assignmentNameStr, dueDate, courseIDStr);****OLD
+        //Assignment assignment = assignmentTree.search(assignmentNameStr, dueDate, courseIDStr);****OLD
 
         holder.assignmentNameTextView.setText(assignment.getAssignmentName());
         holder.courseIdTextView.setText(assignment.getCourseId());

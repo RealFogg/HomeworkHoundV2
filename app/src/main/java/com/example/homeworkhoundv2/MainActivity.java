@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private Sheets sheetsService = null;
@@ -185,6 +186,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Debug method for testing heavy loads of assignments
+    public void generateRandomAssignments(int count) {
+        //List<Assignment> assignments = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = 1; i <= count; i++) {
+            String assignmentName = "Assignment " + i;
+            Date dueDate = generateRandomDueDate();
+            String courseId = "Course " + (random.nextInt(5) + 1); // Random course ID
+
+            Assignment assignment = new Assignment(assignmentName, dueDate, courseId);
+
+            assignmentTree.insert(assignment);
+
+            //assignments.add(assignment);
+        }
+
+        //return assignments;
+    }
+
+    private Date generateRandomDueDate() {
+        long now = System.currentTimeMillis();
+        long maxDate = now + (365 * 24 * 60 * 60 * 1000); // Up to one year in the future
+        long randomTime = now + (long) (Math.random() * (maxDate - now));
+        return new Date(randomTime);
+    }
+
     private void loadMoreAssignments() {
         // You can implement your logic to load more assignments here.
         // For example, update the 'rowStart' and 'rowEnd' variables to load the next batch of assignments
@@ -314,7 +342,8 @@ public class MainActivity extends AppCompatActivity {
                 assignmentAdapter.notifyDataSetChanged();
 
                 // DEBUG: Checking if data is being written into the AVLTree from the google sheet
-                assignmentTree.printAllAssignments();
+                //assignmentTree.printAllAssignments();
+                //assignmentTree.logTreeStructure();
 
                 //Log.d("Debug Log", "Num assignments loaded: " + assignmentList.size());
 

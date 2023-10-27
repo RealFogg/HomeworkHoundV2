@@ -12,6 +12,7 @@ import com.google.api.services.sheets.v4.model.SortSpec;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,11 +66,16 @@ public class GoogleSheetWriter {
             return null;
         }
 
+        // Method to sort the Google Sheet by due date - Only sorts by due date
         private void sortSheetByDueDate() {
             try {
                 // Define the sorting criteria
                 SortSpec sortSpec = new SortSpec()
                         .setDimensionIndex(1) // Sort by the second column
+                        .setSortOrder("ASCENDING"); // Sort in ascending order
+
+                SortSpec sortSpec2 = new SortSpec()
+                        .setDimensionIndex(2) // Sort by the third column
                         .setSortOrder("ASCENDING"); // Sort in ascending order
 
                 // Create a GridRange for the range you want to sort
@@ -86,7 +92,8 @@ public class GoogleSheetWriter {
                 Request sortRequest = new Request()
                         .setSortRange(new SortRangeRequest()
                                 .setRange(gridRange)
-                                .setSortSpecs(Collections.singletonList(sortSpec)));
+                                .setSortSpecs(Arrays.asList(sortSpec, sortSpec2)));
+                                //.setSortSpecs(Collections.singletonList(sortSpec))); This would be used if only using one sortSpec
 
                 // Create a batchUpdate request to apply the sort
                 BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest()

@@ -24,11 +24,7 @@ class AVLNode {
 *  Ok so I think the solution to my issues is simple I think what I need to do when modifying assignments
 * in the recycler view is in the dialog manager when I modify the assignment I should only have to
 * call an update method then notify the adapter back in the assignment adapter.
-*
-* I am working on a project in android studio using java. Here is my current AVLNode structure. Would it make more sense to remove the duedate variable since the ass
 */
-
-// TODO: See if I can make this static so that it is the same AVLTree across all instances(only have to initialize it once)
 class AVLTree {
     // Reference to the root node of the tree
     AVLNode root;
@@ -94,6 +90,11 @@ class AVLTree {
     public void printAllAssignments() {
         Log.d("AVLTree Debug", "Start of print all");
         inOrderTraversal(root);
+    }
+
+    // Debug method
+    public void logTreeStructure() {
+        logTreeStructureRec(root, "", true);
     }
 
     // Perform a pre-order traversal of the tree
@@ -430,6 +431,22 @@ class AVLTree {
 
             // Traverse the right subtree
             inOrderTraversal(node.right);
+        }
+    }
+
+    // Debug method - Logs the tree structure
+    private void logTreeStructureRec(AVLNode node, String prefix, boolean isTail) {
+        if (node != null) {
+            Log.d("AVLTree Debug", prefix + (isTail ? "└── " : "├── ") + node.assignment.getAssignmentName());
+
+            // Determine the next prefix for child nodes
+            String childPrefix = prefix + (isTail ? "    " : "│   ");
+
+            // Log the right subtree
+            logTreeStructureRec(node.right, childPrefix, false);
+
+            // Log the left subtree
+            logTreeStructureRec(node.left, childPrefix, true);
         }
     }
 }

@@ -54,17 +54,29 @@ public class Assignment implements Comparable<Assignment> {
 
     @Override
     public int compareTo(Assignment otherAssignment) {
-        // Compares assignments based on due date, assignment name, and course ID
+        // Compares assignments based on due date, assignment name, and course ID (Sorts by
         int dateCompare = this.dueDate.compareTo(otherAssignment.dueDate);
         if (dateCompare != 0) {
             return dateCompare;
         }
 
-        int nameCompare = this.assignmentName.compareTo(otherAssignment.assignmentName);
-        if (nameCompare != 0) {
-            return nameCompare;
+        // Due dates are the same check if course IDs are the same (
+        int courseIdCompare = this.courseId.compareTo(otherAssignment.courseId);
+        if (courseIdCompare != 0) {
+            return courseIdCompare;
         }
 
-        return this.courseId.compareTo(otherAssignment.courseId);
+        // Due
+        int nameCompare = this.assignmentName.compareTo(otherAssignment.assignmentName);
+        if (nameCompare == 0) {
+            // If all field are the same return 0 (The two assignments are Identical)
+            return nameCompare;
+        }
+        else {
+            // If the due dates and courseIDs are the same but the name is different return 1
+            // This pretty much says "don't compare the name just call it bigger, unless they are the same"
+            // This allows me to use the first in first out principle
+            return 1;
+        }
     }
 }
