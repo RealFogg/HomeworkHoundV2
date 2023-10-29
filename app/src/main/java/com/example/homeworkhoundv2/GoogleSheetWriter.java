@@ -54,7 +54,8 @@ public class GoogleSheetWriter {
                 // Make the API request to write data
                 sheetsService.spreadsheets().values()
                         .update(AppConfig.SPREADSHEET_ID, range, valueRange)
-                        .setValueInputOption("RAW")
+                        //.setValueInputOption("RAW")          // The values the user has entered will not be parsed and will be stored as-is.
+                        .setValueInputOption("USER_ENTERED")   // The values will be parsed as if the user typed them into the UI. (This fixes issue of date having a ' in front of it)
                         .execute();
 
                 // Sort the sheet by due date

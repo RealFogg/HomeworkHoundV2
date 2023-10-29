@@ -249,33 +249,6 @@ public class MainActivity extends AppCompatActivity {
         //loadingMore = false; This is now being done in the assignmentDataReadListener
     }
 
-    private Date convertStringToDateFormat(String stringToDate) {
-        // String Format: MM/dd/YYYY (Google Sheet view of date)
-        try {
-            return AppConfig.shortDate.parse(stringToDate);
-        }
-        catch (ParseException e) {
-            try {
-                return AppConfig.shortMonthDate.parse(stringToDate);
-            }
-            catch (ParseException ex) {
-                try {
-                    return AppConfig.shortDayDate.parse(stringToDate);
-                }
-                catch (ParseException exc) {
-                    try {
-                        return AppConfig.longDate.parse(stringToDate);
-                    }
-                    catch (ParseException exception) {
-                        Log.e("Date Error", "Error occurred converting string to date");
-                        exception.printStackTrace();
-                        return null;
-                    }
-                }
-            }
-        }
-    }
-
     private GoogleSheetReader.DataReadListener courseDataReadListener = new GoogleSheetReader.DataReadListener() {
 
         @Override
@@ -322,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                 for (List<Object> row : values) {
                     if (!row.isEmpty()) {
                         String assignmentName = row.get(0).toString();
-                        Date dueDate = convertStringToDateFormat(row.get(1).toString());
+                        Date dueDate = AppConfig.convertStringToDateFormat(row.get(1).toString());
                         String courseID = row.get(2).toString();
                         Assignment assignment = new Assignment(assignmentName, dueDate, courseID);
                         //assignmentList.add(assignment);

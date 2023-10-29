@@ -131,10 +131,6 @@ class AVLTree {
             // The due date of the given assignment matches the node's due date. So set the nodes assignment
             // equal to the given assignment
             node.assignment = assignment;
-
-            // The due date of the given assignment matches the node's due date, assignment name, and course ID
-            // So I can simply return null because I don't want to insert duplicates.
-            //return null;
         }
 
         // Update the height and balance of the tree

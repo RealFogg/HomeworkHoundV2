@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DialogManager {
     private Context context;
@@ -93,7 +94,7 @@ public class DialogManager {
         // Get data from the selected item
         if (assignment != null) {
             assignmentNameEditText.setText(assignment.getAssignmentName());
-            dueDateEditText.setText(convertDateToStringFormat(assignment.getDueDate()));
+            dueDateEditText.setText(AppConfig.convertDateToStringFormat(assignment.getDueDate()));
             courseIDSpinner.setSelection(getCourseIDPosition(assignment.getCourseId(), courseList));
             editMode = true;
         }
@@ -154,7 +155,7 @@ public class DialogManager {
                     // If the interval of the assignment is loaded (Will need to change this later when I sort by due date I think) *************************************
                     if (intervalOfNewAssignment <= AppConfig.latestIntervalLoaded) {
                         // Create the assignment and add it to the assignment list
-                        Date dueDate = convertStringToDateFormat(dueDateString);
+                        Date dueDate = AppConfig.convertStringToDateFormat(dueDateString);
                         Assignment newAssignment = new Assignment(assignmentNameString, dueDate, courseIDString);
 
                         if (editMode) {
@@ -241,7 +242,7 @@ public class DialogManager {
                         selectedDate.set(year, month, day);
 
                         // Format the selected date as a string
-                        String dateString = convertDateToStringFormat(selectedDate.getTime());
+                        String dateString = AppConfig.convertDateToStringFormat(selectedDate.getTime());
 
                         // Set the formatted date string in the target EditText
                         dateEditText.setText(dateString);
@@ -250,40 +251,6 @@ public class DialogManager {
 
         // Show the dialog box
         datePickerDialog.show();
-    }
-
-    // TODO: Move this to another class and make it static
-    private Date convertStringToDateFormat(String stringToDate) {
-        // String Format: MM/dd/YYYY (Google Sheet view of date)
-        try {
-            return AppConfig.shortDate.parse(stringToDate);
-        }
-        catch (ParseException e) {
-            try {
-                return AppConfig.shortMonthDate.parse(stringToDate);
-            }
-            catch (ParseException ex) {
-                try {
-                    return AppConfig.shortDayDate.parse(stringToDate);
-                }
-                catch (ParseException exc) {
-                    try {
-                        return AppConfig.longDate.parse(stringToDate);
-                    }
-                    catch (ParseException exception) {
-                        Log.e("Date Error", "Error occurred converting string to date");
-                        exception.printStackTrace();
-                        return null;
-                    }
-                }
-            }
-        }
-    }
-
-    // Method to convert the user generated date to a string formatted for the Google sheet ***************************** Change this later
-    private String convertDateToStringFormat(Date dateToString) {
-        // Date Format: M/d/YY or MM/dd/YY (User view of date)
-        return AppConfig.googleDateFormat.format(dateToString);
     }
 
     private int getCourseIDPosition(String courseID, List<Course> courseList) {
