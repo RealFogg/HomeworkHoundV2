@@ -45,12 +45,23 @@ class AVLTree {
 
     // Delete an assignment from the tree
     public void delete(Assignment assignment) {
+        Log.d("AVLTree Debug", "Starting deletion");
         root = deleteRec(root, assignment);
     }
 
     // Modify an assignment in the tree
     public void updateAssignment(Assignment targetAssignment, Assignment updatedAssignment) {
-        root = updateAssignmentRec(root, targetAssignment, updatedAssignment);
+        //root = updateAssignmentRec(root, targetAssignment, updatedAssignment);
+
+        // Check if the due date changed. If due date changed delete and re-insert the assignment
+        if (targetAssignment.getDueDate().compareTo(updatedAssignment.getDueDate()) != 0) {
+            delete(targetAssignment);
+            insert(updatedAssignment);
+        }
+        else {
+            // If due date not changed simply update the existing node
+            root = updateAssignmentRec(root, targetAssignment, updatedAssignment);
+        }
     }
 
     // Search for an assignment in the tree
@@ -205,13 +216,6 @@ class AVLTree {
                 // New and old due dates are the same so I don't need to move any node or balance.
                 node.assignment = updatedAssignment;
                 return node;
-            }
-            else {
-                // Delete the current node
-                root = deleteRec(root, targetAssignment);
-
-                // Insert the a new node with the updated assignment
-                root = insertRec(root, updatedAssignment);
             }
         }
 

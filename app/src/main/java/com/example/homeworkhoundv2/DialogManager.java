@@ -115,9 +115,9 @@ public class DialogManager {
             String courseIDString = courseIDSpinner.getSelectedItem().toString();
 
             // Temp Debug:
-            Log.d("Debug Log", "Assignment name: " + assignmentNameString);
-            Log.d("Debug Log", "Assignment due date: " + dueDateString);
-            Log.d("Debug Log", "Assignment courseID: " + courseIDString);
+            //Log.d("DialogMan Debug", "Assignment name: " + assignmentNameString);
+            //Log.d("DialogMan Debug", "Assignment due date: " + dueDateString);
+            //Log.d("DialogMan Debug", "Assignment courseID: " + courseIDString);
 
             // Add your logic here for saving the assignment
             if (!dueDateString.equals("") && !assignmentNameString.equals("")) {
@@ -148,12 +148,14 @@ public class DialogManager {
 
                     // TODO: Current Issue - When editing an assignment I cant determine the new position to place it
                     // TODO: - because I am currently performing the sort after the modification
+
+                    // TODO: I think I am going to remove the interval system because it has been too problematic
                     // Calculate the interval of the new assignment
                     int intervalOfNewAssignment = (position / (AppConfig.LOAD_INTERVAL)) + 1;  // +1 at end because it is 1 based not 0 based
                     //int intervalOfNewAssignment = (writeOnRow - AppConfig.intervalStart) / AppConfig.LOAD_INTERVAL + 1;
 
                     // If the interval of the assignment is loaded (Will need to change this later when I sort by due date I think) *************************************
-                    if (intervalOfNewAssignment <= AppConfig.latestIntervalLoaded) {
+                    if (intervalOfNewAssignment <= AppConfig.latestIntervalLoaded || true) {
                         // Create the assignment and add it to the assignment list
                         Date dueDate = AppConfig.convertStringToDateFormat(dueDateString);
                         Assignment newAssignment = new Assignment(assignmentNameString, dueDate, courseIDString);
