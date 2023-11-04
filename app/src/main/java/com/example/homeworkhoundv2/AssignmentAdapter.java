@@ -28,18 +28,15 @@ import java.text.SimpleDateFormat;
 
 public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.AssignmentViewHolder> {
     private AVLTree assignmentTree;
-    //private List<Assignment> assignmentList;
     private Context context;
     private Sheets sheetService;
-    //private GoogleSheetWriter.DataWriteListener assignmentDataWriteListener;
 
     private DialogManager dialogManager;
 
     // Constructor to initialize the adapter with data
-    public AssignmentAdapter(Context context, AVLTree assignmentTree/*List<Assignment> assignmentList*/, Sheets sheetService) {
+    public AssignmentAdapter(Context context, AVLTree assignmentTree, Sheets sheetService) {
         this.context = context;
         this.assignmentTree = assignmentTree;
-        //this.assignmentList = assignmentList;
         this.sheetService = sheetService;
 
         // Initialize the DialogManager
@@ -56,11 +53,7 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
                     public void onAssignmentDeleted(Assignment assignment, int position) {
                         // Remove the assignment from the local assignmentList
                         assignmentTree.delete(assignment);
-
-                        // Notify the adapter about the data change
                         notifyItemRemoved(position);
-
-                        // Optionally, could update the Google Sheet here
                     }
                 });
     }
@@ -88,10 +81,9 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         return new AssignmentViewHolder(view);
     }
 
+    // Bind data to the UI elements of the ViewHolder
     @Override
     public void onBindViewHolder(AssignmentViewHolder holder, int position) {
-        // Bind data to the UI elements of the ViewHolder
-
         // This works but may be inefficient (might look for new method in future versions).
         Assignment assignment = assignmentTree.getAssignmentAtPosition(position);
 
@@ -118,32 +110,10 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
 
         holder.dueDateTextView.setText(dueDateString);
 
-        // Debug statements: can remove later
-        //Log.d("AssignmentAdapter", "Binding assignment at position " + position);
-        //Log.d("AssignmentAdapter", "Assignment name: " + assignment.getAssignmentName());
-        //Log.d("AssignmentAdapter", "Course ID: " + assignment.getCourseId());
-        //Log.d("AssignmentAdapter", "Due Date: " + assignment.getDueDate());
-
         /** OnClickListener - Allow users to click on assignment items from the MainActivity Recycler view **/
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Debug - Show the course details
-                //Log.d("AssignmentAdapterOC", "Binding assignment at position " + holder.getAdapterPosition());
-                //Log.d("AssignmentAdapterOC", "Assignment name: " + assignment.getAssignmentName());
-                //Log.d("AssignmentAdapterOC", "Course ID: " + assignment.getCourseId());
-                //Log.d("AssignmentAdapterOC", "Due Date: " + assignment.getDueDate());
-
-                // Debug THIS WORKS But doesn't fix the issue at the start of the onBindViewHolder ********************
-                //String assignmentNameStr = holder.assignmentNameTextView.getText().toString();
-                //String dueDateStr = holder.dueDateTextView.getText().toString();
-                //String courseIDStr = holder.courseIdTextView.getText().toString();
-                //Date holderDueDate = AppConfig.convertStringToDateFormat(dueDateStr);
-                //Assignment holderAssignment = new Assignment(assignmentNameStr, holderDueDate, courseIDStr);
-                //Log.d("AssAdap Debug", "Holder assignmentNameStr: " + assignmentNameStr);
-                //Log.d("AssAdap Debug", "Holder dueDateStr: " + dueDateStr);
-                //Log.d("AssAdap Debug", "Holder courseIDStr: " + courseIDStr);
-
                 // Set the background to a darker color to show the click
                 holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.darkBackground));
 

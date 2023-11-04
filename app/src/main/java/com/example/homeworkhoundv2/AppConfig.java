@@ -7,12 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-/*
-* Known bugs:
-*   - App cannot handle dates properly because google sheets is adding a single quote to the due date
-*       string causing it to sort as if it is a string rather than a date which has issues for some reason
-*/
-
 public class AppConfig {
     // Google Sheet ID
     public static final String SPREADSHEET_ID = "1fy9jX-jukiP6qxl4NEmKUoXMG1ZHj5oeWeICndMoAAA";
@@ -28,11 +22,7 @@ public class AppConfig {
     // Static non-final variables
     public static int totalAssignmentsCount = 0;
 
-    // Variables for keeping track of loaded items / intervals
-    public static final int LOAD_INTERVAL = 20;          // The number of items loaded in each interval
-    public static int latestIntervalLoaded = 0;          // The most recently loaded interval
-    public static final int INTERVAL_START = 14;         // The starting row for the assignments table
-    public static boolean intervalAtCapacity = false;    // Is the current interval range at its max capacity
+    public static final int ASSIGNMENTS_RANGE_START = 14;         // The starting row for the assignments table
 
     // Static methods for global use
     /** Method to convert a string to a date format

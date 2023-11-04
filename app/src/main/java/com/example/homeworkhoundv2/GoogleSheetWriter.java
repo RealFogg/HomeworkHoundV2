@@ -71,12 +71,19 @@ public class GoogleSheetWriter {
         private void sortSheetByDueDate() {
             try {
                 // Define the sorting criteria
+                // SortSpec for the Due date col
                 SortSpec sortSpec = new SortSpec()
                         .setDimensionIndex(1) // Sort by the second column
                         .setSortOrder("ASCENDING"); // Sort in ascending order
 
+                // SortSpec for the CourseID col
                 SortSpec sortSpec2 = new SortSpec()
                         .setDimensionIndex(2) // Sort by the third column
+                        .setSortOrder("ASCENDING"); // Sort in ascending order
+
+                // SortSpec for the Assignment Name col
+                SortSpec sortSpec3 = new SortSpec()
+                        .setDimensionIndex(0) // Sort by the second column
                         .setSortOrder("ASCENDING"); // Sort in ascending order
 
                 // Create a GridRange for the range you want to sort
@@ -93,7 +100,7 @@ public class GoogleSheetWriter {
                 Request sortRequest = new Request()
                         .setSortRange(new SortRangeRequest()
                                 .setRange(gridRange)
-                                .setSortSpecs(Arrays.asList(sortSpec, sortSpec2)));
+                                .setSortSpecs(Arrays.asList(sortSpec, sortSpec2, sortSpec3)));
                                 //.setSortSpecs(Collections.singletonList(sortSpec))); This would be used if only using one sortSpec
 
                 // Create a batchUpdate request to apply the sort

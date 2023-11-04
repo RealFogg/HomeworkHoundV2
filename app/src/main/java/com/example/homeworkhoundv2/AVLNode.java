@@ -19,12 +19,6 @@ class AVLNode {
     }
 }
 
-/*
-*
-*  Ok so I think the solution to my issues is simple I think what I need to do when modifying assignments
-* in the recycler view is in the dialog manager when I modify the assignment I should only have to
-* call an update method then notify the adapter back in the assignment adapter.
-*/
 class AVLTree {
     // Reference to the root node of the tree
     AVLNode root;
@@ -37,19 +31,30 @@ class AVLTree {
 
     /**     Public Methods     **/
 
-    // Insert an assignment into the tree
+    /** Insert an assignment into the tree
+     * Parameter: the assignment to enter
+     * Returns: void
+     */
     public void insert(Assignment assignment) {
         Log.d("AVLTree Debug", "Starting insert");
         root = insertRec(root, assignment);
     }
 
-    // Delete an assignment from the tree
+    /** Delete an assignment from the tree
+     * Parameter: the assignment to delete
+     * Returns: void
+     */
     public void delete(Assignment assignment) {
         Log.d("AVLTree Debug", "Starting deletion");
         root = deleteRec(root, assignment);
     }
 
-    // Modify an assignment in the tree
+    /** Modify an assignment in the tree
+     * Parameters:
+     *      targetAssignment - the assignment that needs updating
+     *      updatedAssignment - an assignment containing the updates
+     * Returns: void
+     */
     public void updateAssignment(Assignment targetAssignment, Assignment updatedAssignment) {
         //root = updateAssignmentRec(root, targetAssignment, updatedAssignment);
 
@@ -62,12 +67,6 @@ class AVLTree {
             // If due date not changed simply update the existing node
             root = updateAssignmentRec(root, targetAssignment, updatedAssignment);
         }
-    }
-
-    // Search for an assignment in the tree
-    public AVLNode search(Assignment assignment) {
-        // Implement search logic here
-        return null; // Return the found node or null if not found
     }
 
     /** Method to search for an assignment based on the following parameters
@@ -87,35 +86,38 @@ class AVLTree {
         }
     }
 
+    /** Method to check if tree contains an assignment
+     * Parameter: assignment - the assignment to check
+     * Returns: true if tree does contain else false
+     */
+    public boolean contains(Assignment assignment) {
+        return searchByAssignmentRec(root, assignment);
+    }
+
+    /** Method to get the assignment at a given position
+     * Parameter: the position
+     * Returns: the assignment at the position
+     */
     public Assignment getAssignmentAtPosition(int position) {
         return getAssignmentAtPositionRec(root, position, new AtomicInteger(0));
     }
 
-    // Public method to get the total number of assignments
+    /** Method to get the total number of assignments */
     public int getTotalAssignments() {
         AtomicInteger count = new AtomicInteger(0); // To keep track of the count
         countTotalAssignments(root, count);
         return count.get();
     }
 
+    // Debug method for printing all assignments
     public void printAllAssignments() {
         Log.d("AVLTree Debug", "Start of print all");
         inOrderTraversal(root);
     }
 
-    // Debug method
+    // Debug method for printing the tree structure
     public void logTreeStructure() {
         logTreeStructureRec(root, "", true);
-    }
-
-    // Perform a pre-order traversal of the tree
-    public void preOrderTraversal() {
-        // Implement pre-order traversal here
-    }
-
-    // Perform a post-order traversal of the tree
-    public void postOrderTraversal() {
-        // Implement post-order traversal here
     }
 
     /**    Private Methods    **/

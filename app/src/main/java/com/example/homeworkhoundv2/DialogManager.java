@@ -18,18 +18,15 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.api.services.sheets.v4.Sheets;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class DialogManager {
     private Context context;
     private AlertDialog alertDialog;
     private AVLTree assignmentTree;
-    //private List<Assignment> assignmentList;
     private Sheets sheetService;
     private AssignmentUpdateListener assignmentUpdateListener;
 
@@ -48,12 +45,11 @@ public class DialogManager {
         }
     }
 
-    public DialogManager(Context context, AVLTree assignmentTree/*List<Assignment> assignmentList*/, Sheets sheetService,
+    public DialogManager(Context context, AVLTree assignmentTree, Sheets sheetService,
                          AssignmentUpdateListener assignmentUpdateListener) {
 
         this.context = context;
         this.assignmentTree = assignmentTree;
-        //this.assignmentList = assignmentList;
         this.sheetService = sheetService;
         this.assignmentUpdateListener = assignmentUpdateListener;
     }
@@ -113,14 +109,10 @@ public class DialogManager {
             String assignmentNameString = assignmentNameEditText.getText().toString();
             String dueDateString = dueDateEditText.getText().toString();
             String courseIDString = courseIDSpinner.getSelectedItem().toString();
+            Assignment temp = new Assignment(assignmentNameString, AppConfig.convertStringToDateFormat(dueDateString), courseIDString);
 
-            // Temp Debug:
-            //Log.d("DialogMan Debug", "Assignment name: " + assignmentNameString);
-            //Log.d("DialogMan Debug", "Assignment due date: " + dueDateString);
-            //Log.d("DialogMan Debug", "Assignment courseID: " + courseIDString);
-
-            // Add your logic here for saving the assignment
-            if (!dueDateString.equals("") && !assignmentNameString.equals("")) {
+            // Verify that all fields are filled and the assignmentTree does not already contain the assignment
+            if (!dueDateString.equals("") && !assignmentNameString.equals("") && !assignmentTree.contains(temp)) {
                 // Prep data to be written to the Google sheet
                 List<List<Object>> dataToWrite = new ArrayList<>();
                 List<Object> rowData = new ArrayList<>();
@@ -132,7 +124,7 @@ public class DialogManager {
                 int writeOnRow = -1;
                 if (editMode) {
                     // Find the row of the item to edit
-                    writeOnRow = AppConfig.INTERVAL_START + position;
+                    writeOnRow = AppConfig.ASSIGNMENTS_RANGE_START + position;
                 }
                 else {
                     // Find the next empty row and create the write range for the row
@@ -146,33 +138,19 @@ public class DialogManager {
                     // Write the new assignment to the Google Sheet
                     GoogleSheetWriter.writeDataToSheet(sheetService, writeRange, dataToWrite, assignmentDataWriteListener);
 
-                    // TODO: Current Issue - When editing an assignment I cant determine the new position to place it
-                    // TODO: - because I am currently performing the sort after the modification
+                    // Create the assignment and add it to the assignment list
+                    Date dueDate = AppConfig.convertStringToDateFormat(dueDateString);
+                    Assignment newAssignment = new Assignment(assignmentNameString, dueDate, courseIDString);
 
-                    // TODO: I think I am going to remove the interval system because it has been too problematic
-                    // Calculate the interval of the new assignment
-                    int intervalOfNewAssignment = (position / (AppConfig.LOAD_INTERVAL)) + 1;  // +1 at end because it is 1 based not 0 based
-                    //int intervalOfNewAssignment = (writeOnRow - AppConfig.intervalStart) / AppConfig.LOAD_INTERVAL + 1;
-
-                    // If the interval of the assignment is loaded (Will need to change this later when I sort by due date I think) *************************************
-                    if (intervalOfNewAssignment <= AppConfig.latestIntervalLoaded || true) {
-                        // Create the assignment and add it to the assignment list
-                        Date dueDate = AppConfig.convertStringToDateFormat(dueDateString);
-                        Assignment newAssignment = new Assignment(assignmentNameString, dueDate, courseIDString);
-
-                        if (editMode) {
-                            // Edit the old version of the assignment
-                            //assignmentList.set(position, newAssignment);
-
-                            // Notify the adapter that a new assignment has been edited
-                            assignmentUpdateListener.onAssignmentUpdated(assignment, newAssignment, position);
-                        }
-                        else {
-                            //assignmentList.add(newAssignment);
-
-                            // Notify the adapter that a new assignment has been added
-                            assignmentUpdateListener.onAssignmentAdded(newAssignment, position);
-                        }
+                    if (editMode) {
+                        // Pass the current assignment and its updated version to the onAssignmentUpdated listener.
+                        // This will update the assignment and notify the adapter of the update.
+                        assignmentUpdateListener.onAssignmentUpdated(assignment, newAssignment, position);
+                    }
+                    else {
+                        // Pass the assignment to delete to the onAssignmentDeleted listener.
+                        // This will delete the assignment and notify the adapter of the change.
+                        assignmentUpdateListener.onAssignmentAdded(newAssignment, position);
                     }
 
                     // Increment the total number of assignments
@@ -181,7 +159,8 @@ public class DialogManager {
                     }
                 }
                 else {
-                    Toast.makeText(context, "Error Writing to Google Sheet", Toast.LENGTH_SHORT).show();
+                    Log.e("DialogManager Debug", "Error Writing to Google Sheet");
+                    //Toast.makeText(context, "Error Writing to Google Sheet", Toast.LENGTH_SHORT).show();
                 }
             }
             else if (dueDateString.equals("")){
@@ -191,17 +170,18 @@ public class DialogManager {
                 Toast.makeText(context, "Enter an assignment name", Toast.LENGTH_SHORT).show();
             }
             else {
-                Toast.makeText(context, "Enter a date and assignment name", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Assignment has already been added", Toast.LENGTH_SHORT).show();
             }
+
         }); // End of save button pressed
 
-        // Handle delete button click ********************* I think this is next Just finished the save button in this session ******************************
+        // Delete button event handler
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (sheetService != null) {
                     // Determine which row to delete
-                    int rowToDelete = AppConfig.INTERVAL_START + position;
+                    int rowToDelete = AppConfig.ASSIGNMENTS_RANGE_START + position;
 
                     // Perform the delete operation
                     GoogleSheetRowDeleter.deleteRowFromSheet(sheetService, rowToDelete, assignmentDeleteListener);

@@ -68,15 +68,6 @@ public class Assignment implements Comparable<Assignment> {
 
         // Due
         int nameCompare = this.assignmentName.compareTo(otherAssignment.assignmentName);
-        if (nameCompare == 0) {
-            // If all field are the same return 0 (The two assignments are Identical)
-            return nameCompare;
-        }
-        else {
-            // If the due dates and courseIDs are the same but the name is different return 1
-            // This pretty much says "don't compare the name just call it bigger, unless they are the same"
-            // This allows me to use the first in first out principle
-            return 1;
-        }
+        return nameCompare;
     }
 }
