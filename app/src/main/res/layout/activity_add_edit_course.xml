@@ -6,41 +6,64 @@
     android:layout_height="match_parent"
     tools:context=".AddEditCourseActivity">
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/courseIDEditText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Course ID"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/courseIDEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Course ID"
-            android:minHeight="48dp" />
+    <Spinner
+        android:id="@+id/colorCodeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="Colors dropdown box"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/courseIDEditText" />
 
-        <Spinner
-            android:id="@+id/colorCodeSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:contentDescription="Colors dropdown box"
-            android:minHeight="48dp" />
+    <Button
+        android:id="@+id/addCourseButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:text="Add Course"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colorCodeSpinner" />
 
-        <Button
-            android:id="@+id/addCourseButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Course" />
+    <!-- Custom Colored Divider -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="#C5BD95"
+        app:layout_constraintBottom_toTopOf="@+id/courseListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <ListView
-            android:id="@+id/courseListView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-
-    </LinearLayout>
+    <ListView
+        android:id="@+id/courseListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:background="#F2E7C2"
+        android:divider="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addCourseButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

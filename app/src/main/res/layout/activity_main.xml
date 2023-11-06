@@ -1,46 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!-- Horizontal LinearLayout for Buttons -->
-    <LinearLayout
-        android:id="@+id/buttonsLayout"
-        android:layout_width="match_parent"
+
+
+    <!-- Add Assignment Button -->
+
+    <!-- Add Course Button -->
+
+
+    <!-- Custom Colored Divider -->
+    <Button
+        android:id="@+id/addAssignmentButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="4dp"
+        android:text="Add Assignment"
+        app:layout_constraintEnd_toStartOf="@+id/addCourseButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Add Assignment Button -->
-        <Button
-            android:id="@+id/addAssignmentButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Add Assignment"
-            android:layout_marginEnd="8dp" />
+    <Button
+        android:id="@+id/addCourseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="12dp"
+        android:text="Add Course"
+        app:layout_constraintBottom_toBottomOf="@+id/addAssignmentButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/addAssignmentButton"
+        app:layout_constraintTop_toTopOf="@+id/addAssignmentButton"
+        app:layout_constraintVertical_bias="1.0" />
 
-        <!-- Add Course Button -->
-        <Button
-            android:id="@+id/addCourseButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Add Course"
-            android:layout_marginStart="8dp" />
-
-    </LinearLayout>
+    <View
+        android:id="@+id/Divider"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:layout_marginTop="12dp"
+        android:background="#C5BD95"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addAssignmentButton" />
 
     <!-- RecyclerView for Assignment List -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/assignmentRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/buttonsLayout"
-        android:layout_marginTop="16dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#F8EDCE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Divider" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
