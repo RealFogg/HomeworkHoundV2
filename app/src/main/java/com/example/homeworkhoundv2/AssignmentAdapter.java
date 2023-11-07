@@ -114,18 +114,6 @@ public class AssignmentAdapter extends RecyclerView.Adapter<AssignmentAdapter.As
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Set the background to a darker color to show the click
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.darkBackground));
-
-                // Start a delayed method that will change the background color back to white
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Set background color back to white
-                        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
-                    }
-                }, 150);
-
                 // Show the edit assignment dialog using the DialogManager
                 dialogManager.AssignmentModificationDialog(assignment, holder.getAdapterPosition());
             }
